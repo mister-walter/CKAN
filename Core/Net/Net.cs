@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using ChinhDo.Transactions;
@@ -49,6 +50,22 @@ namespace CKAN
             Log.DebugFormat("Downloading {0} to {1}", url, filename);
 
             var agent = MakeDefaultHttpClient();
+
+            // WARNING: this disables all SSL checks. DANGER!!!
+            // from https://stackoverflow.com/a/1301221
+            try
+            {
+                //Change SSL checks so that all checks pass
+                ServicePointManager.ServerCertificateValidationCallback =
+                   new RemoteCertificateValidationCallback(
+                        delegate
+                        { return true; }
+                    );
+            }
+            catch (Exception ex)
+            {
+                //ActivityLog.InsertSyncActivity(ex);
+            }
 
             try
             {
